@@ -4,12 +4,17 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.codenova.moneylog.entity.User;
+import org.codenova.moneylog.entity.Verification;
 import org.codenova.moneylog.repository.UserRepository;
+import org.codenova.moneylog.repository.VerificationRepository;
+import org.codenova.moneylog.request.FindPasswordRequest;
 import org.codenova.moneylog.request.LoginRequest;
 import org.codenova.moneylog.service.KakaoApiService;
+import org.codenova.moneylog.service.MailSendService;
 import org.codenova.moneylog.service.NaverApiService;
 import org.codenova.moneylog.vo.KakaoTokenResponse;
 import org.codenova.moneylog.vo.NaverProfileResponse;
@@ -18,7 +23,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Controller
 @AllArgsConstructor
@@ -26,8 +35,12 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 public class AuthController {
     private final NaverApiService naverApiService;
+    private final VerificationRepository verificationRepository;
     private KakaoApiService kakaoApiService;
     private UserRepository userRepository;
+    private MailSendService mailSendService;
+
+
 
     @GetMapping("/login")
     public String loginHandle(Model model) {
@@ -57,6 +70,7 @@ public class AuthController {
 
     @GetMapping("/signup")
     public String signupGetHandle(Model model) {
+        LocalDateTime.now().plusMinutes(30);
 
         return "auth/signup";
     }
@@ -68,9 +82,86 @@ public class AuthController {
             user.setProvider("LOCAL");
             user.setVerified("F");
             userRepository.save(user);
+            mailSendService.sendWelcomeMessage(user);
         }
         return "redirect:/index";
     }
+
+
+    @GetMapping("/find-password")
+    public String findPasswordHandle(Model model) {
+        return "auth/find-password";
+    }
+
+
+    @PostMapping("/find-password")
+    public String findPasswordPostHandle(@ModelAttribute @Valid FindPasswordRequest req,
+                                         BindingResult result,
+                                         Model model) {
+
+        if (result.hasErrors()) {
+            model.addAttribute("error", "이메일 형식이 아닙니다.");
+            return "auth/find-password-error";
+        }
+
+        User found = userRepository.findByEmail(req.getEmail());
+        if (found == null) {
+            model.addAttribute("error", "해당 이메일로 임시번호를 전송할 수 없습니다.");
+            return "auth/find-password-error";
+        }
+
+        String temporalPassword = UUID.randomUUID().toString().substring(0, 8);
+        userRepository.updatePasswordByEmail(req.getEmail(), temporalPassword);
+        mailSendService.sendTemporalPasswordMessage(req.getEmail(), temporalPassword);
+
+        return "";
+    }
+
+
+    @GetMapping("/email-check")
+    public String emailVerify() {
+        return "auth/email-check";
+    }
+
+    @PostMapping("/email-create-verification")
+    public String emailVerifyPost(@RequestParam("email") String email, Model model){
+
+        User user = userRepository.findByEmail(email);
+
+        if (user == null) {
+            model.addAttribute("error" + "이메일이 틀립니다.");
+            return "auth/email-check";
+        }
+
+        String result = UUID.randomUUID().toString();
+
+        Verification verification = new Verification();
+        verification.setToken(result);
+        verification.setUserEmail(user.getEmail());
+
+        verificationRepository.create(verification);
+
+        mailSendService.sendEmailVerify(verification.getUserEmail(), verification.getToken());
+
+        return "redirect:/auth/login";
+    }
+
+    @GetMapping("/email-verify/{email}/{token}")
+    public String emailVerifyCheck(@PathVariable("email") String email, @PathVariable("token") String token) {
+
+        User user = userRepository.findByEmail(email);
+        Verification verification = verificationRepository.selectByToken(token);
+        if (user.getEmail().equals(verification.getUserEmail())) {
+            userRepository.updateUserVerified(email);
+        }
+
+        return "auth/email-verify-check";
+    }
+
+
+
+
+
 
     @GetMapping("/kakao/callback")
     public String kakaoCallbackHandle(@RequestParam("code") String code,
@@ -95,7 +186,7 @@ public class AuthController {
             session.setAttribute("user", user);
         }
         log.info("decodedJWT: sub={}, nickname={}, picture={}", sub, nickname, picture);
-        return "redirect:/";
+        return "redirect:/index";
     }
 
 
@@ -132,11 +223,11 @@ public class AuthController {
 
             userRepository.save(user);
             session.setAttribute("user", user);
-        }else {
+        } else {
             session.setAttribute("user", found);
         }
 
-        return "redirect:/";
+        return "redirect:/index";
 
     }
 }

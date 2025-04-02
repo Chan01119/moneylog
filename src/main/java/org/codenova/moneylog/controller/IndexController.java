@@ -13,7 +13,7 @@ import java.util.Optional;
 @Controller
 public class IndexController {
 
-    @GetMapping("/")
+    @GetMapping({"/","/index"})
     public String indexHandle(@SessionAttribute("user") Optional<User> user, Model model) {
         if (user.isEmpty()) {
             return "index";

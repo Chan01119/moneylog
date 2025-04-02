@@ -8,6 +8,8 @@
 <div>
   <div style="text-align: right">
     <span th:text="${user.nickname}"></span> (<small th:text="${user.provider}"></small>
+      <span th:if="${user.verified=='T'}">인증</span>
+      <span th:if="${user.verified=='F'}">인증필요</span>
   </div>
 </div>
 

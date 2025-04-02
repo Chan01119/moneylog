@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>머니로그</title>
+</head>
+<body>
+<h1>머니로그</h1>
+<h2>이메일 인증</h2>
+<p>
+    아래에 이메일 주소를 입력해주세요
+</p>
+<form th:action="@{/auth/email-create-verification}" method="post">
+    <input type="text" name="email"><span th:text="${error}" style="font-size: small; color: red"></span>
+    <button type="submit">전송</button>
+</form>
+</body>
+</html>
