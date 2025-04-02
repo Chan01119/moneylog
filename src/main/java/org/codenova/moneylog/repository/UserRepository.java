@@ -8,7 +8,7 @@ import org.codenova.moneylog.entity.User;
 public interface UserRepository {
     public int save(User user);
     public User findByEmail(@Param("email") String email);
-    public User findByProviderAndProviderId(@Param("provider") String provider,
-                                            @Param("providerId") String providerId);
+    public User findByProviderAndProviderId(@Param("provider") String provider, @Param("providerId") String providerId);
+
 
 }

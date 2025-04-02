@@ -5,16 +5,16 @@
 <mapper namespace="org.codenova.moneylog.repository.UserRepository">
     <insert id="save">
         insert into
-            user(email, password, nickname, picture, provider_id, verified, create_at)
+            user(email, password, nickname, picture, provider_id, verified, created_at)
         values
             (#{email}, #{password}, #{nickname}, #{provider}, #{providerId}, #{verified}, now() )
     </insert>
 
     <select id="findByEmail" resultType="user">
-        select * from users where email=#{email}
+        select * from user where email=#{email}
     </select>
     <select id="findByProviderAndProviderId" resultType="user">
-    select * from users where provider=#{provider} and provider_id=#{providerId}
+    select * from user where provider=#{provider} and provider_id=#{providerId}
     </select>
 
 </mapper>
