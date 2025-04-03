@@ -6,14 +6,14 @@ import org.codenova.moneylog.entity.User;
 
 @Mapper
 public interface UserRepository {
-    public int save(User user);
-    public User findByEmail(@Param("email") String email);
-    public User findByProviderAndProviderId(@Param("provider") String provider, @Param("providerId") String providerId);
+    int save(User user);
+     User findByEmail(@Param("email") String email);
+    User findByProviderAndProviderId(@Param("provider") String provider, @Param("providerId") String providerId);
 
 
-    public int updatePasswordByEmail(@Param("email") String email,
-                                     @Param("password") String password);
+    int updatePasswordByEmail(@Param("email") String email,
+                              @Param("password") String password);
 
-    public int updateUserVerified(@Param("email") String email);
+    int updateUserVerified(@Param("email") String email);
 
 }

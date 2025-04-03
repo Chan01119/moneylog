@@ -127,7 +127,6 @@ public class AuthController {
     public String emailVerifyPost(@RequestParam("email") String email, Model model){
 
         User user = userRepository.findByEmail(email);
-
         if (user == null) {
             model.addAttribute("error" + "이메일이 틀립니다.");
             return "auth/email-check";
