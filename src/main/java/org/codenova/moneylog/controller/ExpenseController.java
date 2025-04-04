@@ -25,13 +25,11 @@ public class ExpenseController {
     @GetMapping("/history")
     public String historyHandle(Model model, @SessionAttribute("user") Optional<User> user) {
 
-        if(user.isEmpty()){
+        if (user.isEmpty()) {
             return "redirect:/auth/login";
         }
 
-
-        List<Expense> expenseList = expenseRepository.selectByUserId(user.get().getId());
-        model.addAttribute("expenseList", expenseList);
+        model.addAttribute("expenseList", expenseRepository.findWithCategoryByUserId(user.get().getId()));
 
         List<Category> categoryList = categoryRepository.selectAll();
         model.addAttribute("categoryList", categoryList);
@@ -42,8 +40,8 @@ public class ExpenseController {
 
     @PostMapping("/history")
     public String historyPost(@ModelAttribute Expense expense, @SessionAttribute("user") Optional<User> user,
-                              Model model){
-        if(user.isEmpty()){
+                              Model model) {
+        if (user.isEmpty()) {
             return "redirect:/auth/login";
         }
 

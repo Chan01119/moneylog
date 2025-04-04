@@ -3,17 +3,25 @@ package org.codenova.moneylog.controller;
 
 import lombok.Getter;
 import org.codenova.moneylog.entity.User;
+import org.codenova.moneylog.repository.ExpenseRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.SessionAttribute;
 
+import java.time.LocalDate;
 import java.util.Optional;
 
 @Controller
 public class IndexController {
 
-    @GetMapping({"/","/index"})
+    private ExpenseRepository expenseRepository;
+
+    public IndexController(ExpenseRepository expenseRepository) {
+        this.expenseRepository = expenseRepository;
+    }
+
+    @GetMapping({"/", "/index"})
     public String indexHandle(@SessionAttribute("user") Optional<User> user, Model model) {
         if (user.isEmpty()) {
             return "index";
@@ -25,8 +33,26 @@ public class IndexController {
 
     @GetMapping("/home")
     public String homeHandle(@SessionAttribute("user") Optional<User> user, Model model) {
+
         if (user.isPresent()) {
+
+            LocalDate today = LocalDate.now();
+            LocalDate startDate = today.minusDays(today.getDayOfWeek().getValue() - 1);
+            LocalDate endDate = today.plusDays(7 - today.getDayOfWeek().getValue());
+
+
             model.addAttribute(user.get());
+            model.addAttribute("startDate", startDate);
+            model.addAttribute("endDate", endDate);
+            model.addAttribute("totalAmount", expenseRepository
+                    .getTotalAmountByUserIdAndPeriod(user.get().getId(), startDate, endDate));
+
+            model.addAttribute
+                    ("top3Expense", expenseRepository.
+                            getTop3ExpenseByUserId(user.get().getId(), startDate, endDate));
+            model.addAttribute("categoryExpense",
+                    expenseRepository.
+                            getCategoryExpenseByUserId(user.get().getId(), startDate, endDate));
             return "home";
         } else {
             return "redirect:/";

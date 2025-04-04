@@ -68,7 +68,7 @@
         <td style="padding: 8px; border: 1px solid #ccc;" th:text="${one.expenseDate}">2025-04-01</td>
         <td style="padding: 8px; border: 1px solid #ccc;" th:text="${one.Description}">점심 식사</td>
         <td style="padding: 8px; border: 1px solid #ccc;" th:text="${one.amount}">9,000</td>
-        <td style="padding: 8px; border: 1px solid #ccc;" th:text="${one.CategoryId}">식비</td>
+        <td style="padding: 8px; border: 1px solid #ccc;" th:text="${one.categoryName}">식비</td>
     </tr>
     </tbody>
 </table>
@@ -86,7 +86,7 @@
                     <input type="text" style="width: 100%;" name="description"/>
                 </td>
                 <td style="padding: 8px; border: 1px solid #ccc; width: 15%;">금액
-                    <input type="number" style="width: 100%;" name="expenseDate"/>
+                    <input type="number" style="width: 100%;" name="amount"/>
                 </td>
                 <td style="padding: 8px; border: 1px solid #ccc; width: 20%;">카테고리
                     <select style="width: 100%" name="categoryId">
