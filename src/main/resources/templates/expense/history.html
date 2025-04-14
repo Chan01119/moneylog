@@ -31,12 +31,12 @@
       align-items: center; padding: 20px; gap: 20px;">
 
 
-        <input type="date" name="startDate" th:value="${startDate}"
+        <input type="date" name="startDate" th:value="${startDate}" id="startDate"
                onchange="event.target.nextElementSibling.nextElementSibling.value ='2025-01-10';"
                style="padding: 10px 12px; font-size: 18px; font-weight: 300; text-align: center; border: 1px solid #ccc; border-radius: 6px;">
 
         <span style="font-size:20px">~</span>
-        <input type="date" name="endDate" th:value="${endDate}"
+        <input type="date" name="endDate" th:value="${endDate}" id="endDate"
                style="padding: 10px 12px; font-size: 18px; font-weight: 300; text-align: center; border: 1px solid #ccc; border-radius: 6px;">
 
 
@@ -48,62 +48,97 @@
     </form>
 
 
-<!-- 📋 지출 내역 테이블 -->
-<table style="border-collapse: collapse; width: 100%; margin-bottom: 30px;">
-    <thead>
-    <tr style="background-color: #f2f2f2;">
-        <th style="padding: 8px; border: 1px solid #ccc; width:5%">
-            <input type="checkbox"/>
-        </th>
-        <th style="padding: 8px; border: 1px solid #ccc; width:15%">날짜</th>
-        <th style="padding: 8px; border: 1px solid #ccc; width:45%">내용</th>
-        <th style="padding: 8px; border: 1px solid #ccc; width:15%">금액</th>
-        <th style="padding: 8px; border: 1px solid #ccc; width:20%">카테고리</th>
+    <!-- 📋 지출 내역 테이블 -->
+    <table style="border-collapse: collapse; width: 100%; margin-bottom: 30px;">
+        <thead>
+        <tr style="background-color: #f2f2f2;">
+            <th style="padding: 8px; border: 1px solid #ccc; width:5%">
+                <input type="checkbox"/>
+            </th>
+            <th style="padding: 8px; border: 1px solid #ccc; width:15%">날짜</th>
+            <th style="padding: 8px; border: 1px solid #ccc; width:45%">내용</th>
+            <th style="padding: 8px; border: 1px solid #ccc; width:15%">금액</th>
+            <th style="padding: 8px; border: 1px solid #ccc; width:20%">카테고리</th>
 
-    </tr>
-    </thead>
-    <tbody th:each="one : ${expenseList}">
-    <tr>
-        <td style="padding: 8px; border: 1px solid #ccc;text-align: center">
-            <input type="checkbox"/></td>
-        <td style="padding: 8px; border: 1px solid #ccc;" th:text="${one.expenseDate}">2025-04-01</td>
-        <td style="padding: 8px; border: 1px solid #ccc;" th:text="${one.Description}">점심 식사</td>
-        <td style="padding: 8px; border: 1px solid #ccc;" th:text="${one.amount}">9,000</td>
-        <td style="padding: 8px; border: 1px solid #ccc;" th:text="${one.categoryName}">식비</td>
-    </tr>
-    </tbody>
-</table>
+        </tr>
+        </thead>
+        <tbody th:each="one : ${expenseList}">
+        <tr>
+            <td style="padding: 8px; border: 1px solid #ccc;text-align: center">
+                <input type="checkbox"/></td>
+            <td style="padding: 8px; border: 1px solid #ccc;" th:text="${one.expenseDate}">2025-04-01</td>
+            <td style="padding: 8px; border: 1px solid #ccc;" th:text="${one.Description}">점심 식사</td>
+            <td style="padding: 8px; border: 1px solid #ccc;" th:text="${one.amount}">9,000</td>
+            <td style="padding: 8px; border: 1px solid #ccc;" th:text="${one.categoryName}">식비</td>
+        </tr>
+        </tbody>
+    </table>
 
-<div style="margin-top: 30px;">
-    <form th:action="@{history}" method="post">
-        <table style="border-collapse: collapse; width= 100%; margin-bottom: 10px;">
-            <tr>
-                <td style="padding: 8px; border: 1px solid #ccc;text-align: center; width: 5%">
-                    <input type="checkbox" disabled/></td>
-                <td style="padding: 8px; border: 1px solid #ccc; width: 15%;">날짜
-                    <input type="date" style="width: 100%;" name="expenseDate"/>
-                </td>
-                <td style="padding: 8px; border: 1px solid #ccc; width: 45%;">내용
-                    <input type="text" style="width: 100%;" name="description"/>
-                </td>
-                <td style="padding: 8px; border: 1px solid #ccc; width: 15%;">금액
-                    <input type="number" style="width: 100%;" name="amount"/>
-                </td>
-                <td style="padding: 8px; border: 1px solid #ccc; width: 20%;">카테고리
-                    <select style="width: 100%" name="categoryId">
-                        <option th:each="category : ${categoryList}" th:text="${category.getName()}"
-                                th:value="${category.getId()}"></option>
-                    </select>
-                </td>
-            </tr>
-        </table>
-        <div style="text-align: right; ">
-            <button type="submit" style="padding: 4px 30px;  border: none;
+    <div style="margin-top: 30px;">
+        <form th:action="@{history}" method="post">
+            <table style="border-collapse: collapse; width= 100%; margin-bottom: 10px;">
+                <tr>
+                    <td style="padding: 8px; border: 1px solid #ccc;text-align: center; width: 5%">
+                        <input type="checkbox" disabled/></td>
+                    <td style="padding: 8px; border: 1px solid #ccc; width: 15%;">날짜
+                        <input type="date" style="width: 100%;" name="expenseDate"/>
+                    </td>
+                    <td style="padding: 8px; border: 1px solid #ccc; width: 45%;">내용
+                        <input type="text" style="width: 100%;" name="description" list="options" id="description"/>
+                        <datalist id="options"></datalist>
+                    </td>
+                    <td style="padding: 8px; border: 1px solid #ccc; width: 15%;">금액
+                        <input type="number" style="width: 100%;" name="amount"/>
+                    </td>
+                    <td style="padding: 8px; border: 1px solid #ccc; width: 20%;">카테고리
+                        <select style="width: 100%" name="categoryId">
+                            <option th:each="category : ${categoryList}" th:text="${category.getName()}"
+                                    th:value="${category.getId()}"></option>
+                        </select>
+                    </td>
+                </tr>
+            </table>
+            <div style="text-align: right; ">
+                <button type="submit" style="padding: 4px 30px;  border: none;
             background-color: slategray; color: white; border-radius: 6px; cursor: pointer;">저장하기
-            </button>
-        </div>
-    </form>
+                </button>
+            </div>
+        </form>
+    </div>
 </div>
-</div>
+
+<script>
+
+    document.getElementById("description").onkeyup=function(evt) {
+        if(!evt.target.value) {
+            return;
+        }
+        fetch("/api/expense/auto-complete?word="+evt.target.value, {
+            method : "get"
+        }).then(function(response) {
+            return response.text();
+        }).then(function(text) {
+            console.log(text);
+            const items = text.split(",");
+            let optionsHTML ="";
+            for(let one of items) {
+                optionsHTML += "<option>"+one+"</option>";
+            }
+            document.getElementById("options").innerHTML = optionsHTML;
+        });
+    }
+
+
+
+    document.getElementById("startDate").onchange=function(evt) {
+        fetch("/api/expense/next-month?date="+evt.target.value, {
+            method : "get"
+        }).then(function(response) {
+            return response.text();
+        }).then(function(text) {
+          const obj = JSON.parse(texj)                                                          //document.getElementById("endDate").value= text;
+        });
+    };
+</script>
 </body>
 </html>

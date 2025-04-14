@@ -29,7 +29,7 @@ public class KakaoApiService {
         MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
         body.add("grant_type", "authorization_code");
         body.add("client_id", "9663da44d048e888ca60dc1fc7f814c8");
-        body.add("redirect_uri", "http://192.168.10.30:8080/auth/kakao/callback");
+        body.add("redirect_uri", "http://192.168.10.158:8080/auth/kakao/callback");
         body.add("code", code);
 
         ResponseEntity<String> response = restTemplate.exchange("https://kauth.kakao.com/oauth/token",

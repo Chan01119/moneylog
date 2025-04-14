@@ -61,4 +61,8 @@
         order by expense_date asc
     </select>
 
+    <select id="getDistinctDescription" resultType="string">
+        select distinct description from expense where description like #{word}
+    </select>
+
 </mapper>

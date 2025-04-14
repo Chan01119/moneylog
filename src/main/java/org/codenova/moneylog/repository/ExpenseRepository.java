@@ -41,6 +41,8 @@ public interface ExpenseRepository {
      List<DailyExpense> getDailyExpenseByUserIdAndPeriod(@Param("userId") int userId,
                                                          @Param("startDate") LocalDate startDate,
                                                          @Param("endDate") LocalDate endDate);
+
+     List<String> getDistinctDescription(@Param("word") String word);
 }
 
 
